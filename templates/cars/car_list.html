@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Browse Cars - Car Rental
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Browse Available Cars</h2>
+
+<!-- FILTER FORM -->
+<form method="GET" class="card card-body shadow-sm mb-4">
+
+    <div class="row g-3 align-items-end">
+
+        <div class="col-md-3">
+            <label class="form-label">City</label>
+            {{ form.city }}
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Minimum Year</label>
+            {{ form.min_year }}
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Maximum Year</label>
+            {{ form.max_year }}
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label">Passengers</label>
+            {{ form.capacity }}
+        </div>
+
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">
+                Filter
+            </button>
+        </div>
+
+        <div class="col-md-2">
+            <a href="{% url 'car_list' %}" class="btn btn-outline-secondary w-100">
+                Clear
+            </a>
+        </div>
+
+    </div>
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger mt-3">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    {% for field in form %}
+        {% if field.errors %}
+            <div class="text-danger small mt-2">
+                {{ field.errors }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+</form>
+
+
+<!-- RESULTS -->
+<h5 class="mb-3">
+    {{ cars|length }} cars found
+</h5>
+
+<div class="row">
+
+    {% for car in cars %}
+
+        <div class="col-md-6 col-lg-4 mb-4">
+
+            <div class="card h-100 shadow-sm">
+
+                {% with car.images.first as first_image %}
+
+                    {% if first_image %}
+
+                        <img src="{{ first_image.image.url }}"
+                             class="card-img-top"
+                             alt="{{ car.brand }} {{ car.model }}"
+                             style="height: 200px; object-fit: cover;">
+
+                    {% else %}
+
+                        <div class="bg-secondary text-white text-center p-5">
+                            No image available
+                        </div>
+
+                    {% endif %}
+
+                {% endwith %}
+
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        {{ car.brand }} {{ car.model }} ({{ car.year }})
+                    </h5>
+
+                    <p class="text-muted mb-2">
+                        {{ car.city }}
+                    </p>
+
+                    <p class="card-text">
+                        Passengers: {{ car.capacity }}<br>
+                        Transmission: {{ car.get_transmission_display }}
+                    </p>
+
+                    <h5 class="text-primary">
+                        {{ car.daily_price }} GEL / day
+                    </h5>
+
+                    <a href="{% url 'car_detail' car.id %}"
+                       class="btn btn-primary w-100 mt-3">
+                        View Details
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <div class="col-12">
+            <div class="alert alert-info">
+                No cars match your filters.
+            </div>
+        </div>
+
+    {% endfor %}
+    {% if cars.has_other_pages %}
+
+            <nav aria-label="Car pagination" class="mt-4">
+
+            <ul class="pagination justify-content-center">
+
+                {% if cars.has_previous %}
+
+                    <li class="page-item">
+
+                        <a class="page-link"
+                        href="?page={{ cars.previous_page_number }}&city={{ request.GET.city|urlencode }}&min_year={{ request.GET.min_year }}&max_year={{ request.GET.max_year }}&capacity={{ request.GET.capacity }}">
+                            Previous
+                        </a>
+
+                    </li>
+
+                {% else %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+
+                {% endif %}
+
+
+                {% for page in page_numbers %}
+
+                    {% if page == cars.number %}
+
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page }}
+                            </span>
+                        </li>
+
+                    {% else %}
+
+                        <li class="page-item">
+
+                            <a class="page-link"
+                            href="?page={{ page }}&city={{ request.GET.city|urlencode }}&min_year={{ request.GET.min_year }}&max_year={{ request.GET.max_year }}&capacity={{ request.GET.capacity }}">
+                                {{ page }}
+                            </a>
+
+                        </li>
+
+                    {% endif %}
+
+                {% endfor %}
+
+
+                {% if cars.has_next %}
+
+                    <li class="page-item">
+
+                        <a class="page-link"
+                        href="?page={{ cars.next_page_number }}&city={{ request.GET.city|urlencode }}&min_year={{ request.GET.min_year }}&max_year={{ request.GET.max_year }}&capacity={{ request.GET.capacity }}">
+                            Next
+                        </a>
+
+                    </li>
+
+                {% else %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+
+                {% endif %}
+
+            </ul>
+
+        </nav>
+
+    {% endif %}
+</div>
+
+{% endblock %}

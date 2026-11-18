@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Add a Car - Car Rental{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-dark text-white">
+                <h4 class="mb-0">List Your Car</h4>
+            </div>
+
+            <div class="card-body p-4">
+
+                <p class="text-muted">
+                    Fill in the information below to publish your car.
+                </p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    {{ form.as_p }}
+
+                    <hr>
+
+                    <div class="mb-3">
+
+                        <label for="images" class="form-label">
+                            Upload 3 car photos
+                        </label>
+
+                        <input
+                            type="file"
+                            name="images"
+                            id="images"
+                            class="form-control"
+                            accept=".png,.jpg,.jpeg"
+                            multiple
+                            required
+                        >
+
+                        <div class="form-text">
+                            Exactly three photos are required.
+                            Accepted formats: PNG, JPG and JPEG.
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Publish Car
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

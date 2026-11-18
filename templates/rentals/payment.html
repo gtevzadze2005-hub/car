@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Payment - Car Rental
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-dark text-white p-3">
+                    <h3 class="mb-0">Secure Checkout</h3>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <h5 class="mb-3">Rental Summary</h5>
+
+                    <div class="bg-light rounded p-3 mb-4">
+
+                        <p class="mb-2">
+                            <strong>Car:</strong>
+                            {{ car.brand }} {{ car.model }}
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Rental period:</strong>
+                            {{ start_date }} — {{ end_date }}
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Duration:</strong>
+                            {{ rental_days }} days
+                        </p>
+
+                        <p class="mb-2">
+                            <strong>Daily price:</strong>
+                            {{ car.daily_price }} GEL
+                        </p>
+
+                        <hr>
+
+                        <h4 class="text-success mb-0">
+                            Total: {{ total_price }} GEL
+                        </h4>
+
+                    </div>
+
+                    <h5 class="mb-3">Card Details</h5>
+
+                    
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Cardholder Name
+                            </label>
+                            {{ form.cardholder_name }}
+                            {{ form.cardholder_name.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Card Number
+                            </label>
+                            {{ form.card_number }}
+                            {{ form.card_number.errors }}
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    Expiration Date
+                                </label>
+                                {{ form.expiry_date }}
+                                {{ form.expiry_date.errors }}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    CVV
+                                </label>
+                                {{ form.cvv }}
+                                {{ form.cvv.errors }}
+                            </div>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-success btn-lg w-100">
+                            Pay {{ total_price }} GEL
+                        </button>
+
+                    </form>
+
+                    <div class="text-center mt-3">
+                        
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

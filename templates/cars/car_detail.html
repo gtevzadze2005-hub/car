@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ car.brand }} {{ car.model }} - Car Rental
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="mb-4">
+        <h2>{{ car.brand }} {{ car.model }}</h2>
+        <p class="text-muted">{{ car.year }} · {{ car.city }}</p>
+    </div>
+
+
+    
+
+    <h4 class="mb-3">Vehicle Photos</h4>
+
+    <div class="row mb-5">
+
+        {% for image in car.images.all %}
+
+            <div class="col-md-4 mb-3">
+
+                <div class="card shadow-sm">
+
+                    <img src="{{ image.image.url }}"
+                         class="card-img-top"
+                         alt="{{ car.brand }} {{ car.model }}"
+                         style="height: 220px; object-fit: cover;">
+
+                </div>
+
+            </div>
+
+        {% empty %}
+
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No photos available.
+                </div>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    
+
+    <div class="row">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Vehicle Specifications</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Brand:</strong>
+                            {{ car.brand }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Model:</strong>
+                            {{ car.model }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Year:</strong>
+                            {{ car.year }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>City:</strong>
+                            {{ car.city }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Passengers:</strong>
+                            {{ car.capacity }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Transmission:</strong>
+                            {{ car.get_transmission_display }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <strong>Fuel Tank Capacity:</strong>
+                            {{ car.fuel_tank_capacity }} L
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        
+
+        <div class="col-lg-4">
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-body">
+
+                    <h4 class="text-primary">
+                        {{ car.daily_price }} GEL / day
+                    </h4>
+                    {% if user.is_authenticated %}
+
+                        <form method="POST"
+                            action="{% url 'toggle_favorite' car.id %}"
+                            class="mt-3">
+
+                            {% csrf_token %}
+
+                            {% if is_favorite %}
+
+                                <button type="submit" class="btn btn-danger">
+                                    ♥ Remove from Favorites
+                                </button>
+
+                            {% else %}
+
+                                <button type="submit" class="btn btn-outline-danger">
+                                    ♡ Add to Favorites
+                                </button>
+
+                            {% endif %}
+
+                        </form>
+
+                    {% else %}
+
+                        <a href="{% url 'login' %}" class="btn btn-outline-danger mt-3">
+                            ♡ Login to Add to Favorites
+                        </a>
+
+                    {% endif %}
+                    {% if user.is_authenticated %}
+
+                        {% if user != car.owner %}
+
+                            <a href="{% url 'book_car' car.id %}"
+                            class="btn btn-success mt-3">
+                                Rent This Car
+                            </a>
+
+                        {% else %}
+
+                            <button class="btn btn-secondary mt-3" disabled>
+                                This Is Your Car
+                            </button>
+
+                        {% endif %}
+
+                    {% else %}
+
+                        <a href="{% url 'login' %}"
+                        class="btn btn-success mt-3">
+                            Login to Rent This Car
+                        </a>
+
+                    {% endif %}
+
+                    <hr>
+
+                    <h5>Owner Information</h5>
+
+                    <p>
+                        <strong>Name:</strong>
+                        {{ car.owner.first_name }}
+                        {{ car.owner.last_name }}
+                    </p>
+
+                    <p>
+                        <strong>Phone:</strong>
+                        {{ car.owner.phone_number }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <a href="{% url 'home' %}" class="btn btn-secondary mb-4">
+        Back to Homepage
+    </a>
+
+</div>
+
+{% endblock %}
